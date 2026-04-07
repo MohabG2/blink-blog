@@ -3,8 +3,16 @@ import { UserService } from "../services/user.service.ts";
 
 export const UserController = {
     register: (req: Request, res: Response, next: NextFunction): void => {
-        const user = UserService.register(req.body);
-        res.status(201).json({ success: true, user });
+        try {
+            const user = UserService.register(req.body);
+            res.status(201).json({ success: true,message: "User registered successfully", user });
+        } catch (error) {
+            if ((error as Error).message === "Email already exists") {
+                res.status(409).json({ success: false, message: (error as Error).message });
+            } else {
+                res.status(400).json({ success: false, message: (error as Error).message });
+            }
+        }
     },
     login: (req: Request, res: Response, next: NextFunction): void => {
         const { email, password } = req.body;

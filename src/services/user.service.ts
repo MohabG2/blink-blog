@@ -1,11 +1,14 @@
-import e from 'express';
 import {type User} from '../models/user.model.ts';
 
 let users: User[] = [];
 let nextId = 1;
 
 export const UserService =  {
-        register: (data: Omit<User, 'id'>) => {
+        register: (data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) => {
+            const existingUser = users.find(user => user.email === data.email);
+            if (existingUser) {
+                throw new Error("Email already exists");
+            }
             const newUser: User = {
                 id: nextId++,
                 ...data,

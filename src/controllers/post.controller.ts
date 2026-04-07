@@ -1,6 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { PostService } from "../services/post.service.ts";
-import { get } from "node:http";
 
 export const PostController = {
     getAll: (req: Request, res: Response, next: NextFunction): void => {

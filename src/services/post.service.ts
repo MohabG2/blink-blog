@@ -1,4 +1,3 @@
-import type { get } from 'node:http';
 import {type Post} from '../models/post.model.ts';
 
 let posts: Post[] = [];
@@ -44,11 +43,5 @@ export const PostService = {
         const initialLength = posts.length;
         posts = posts.filter(post => post.id !== id);
         return posts.length < initialLength;
-        // const postIndex = posts.findIndex(post => post.id === id);
-        // if (postIndex === -1) {
-        //     return false;
-        // }
-        // posts.splice(postIndex, 1);
-        // return true;
     }
 };
