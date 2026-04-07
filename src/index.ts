@@ -18,7 +18,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(404).json({ success: false, message: "The route ${req.originalUrl} does not exist" });
+    res.status(404).json({ success: false, message: `The route ${req.originalUrl} does not exist` });
 });
 
 interface CustomError extends Error {

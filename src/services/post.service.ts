@@ -1,47 +1,95 @@
 import {type Post} from '../models/post.model.ts';
+import prisma from '../prisma.ts';
 
-let posts: Post[] = [];
-let nextId = 1;
+
+const normalizePost = (post: any): Post => {
+    const { upadatedAt, ...rest } = post;
+    return {
+        ...rest,
+        updatedAt: upadatedAt ?? post.updatedAt,
+    } as Post;
+};
 
 export const PostService = {
-    getall: (): Post[] => {
-        return posts;
+    getall: async (): Promise<Post[]> => {
+        const result = await prisma.post.findMany({
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    }
+                }
+        }});
+        return result.map(normalizePost);
     },
-    getById: (id: number): Post | null => {
-        const post = posts.find(post => post.id === id);
-        return post || null;
+    getById: async (id: number): Promise<Post | null> => {
+        const result = await prisma.post.findUnique({
+            where: { id },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    }
+                }
+            }
+        });
+        return result ? normalizePost(result) : null;
     },
-    create: (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt'>): Post => {
-        const newPost: Post = {
-            id: nextId++,
-            ...data,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
-        posts.push(newPost);
-        return newPost;
+    create: async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt'>): Promise<Post> => {
+        const result = await prisma.post.create({
+            data: {
+                ...data,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    }
+                }
+            }
+        });
+        return normalizePost(result);
+
     },
-    update: (id: number, data: Partial<Omit<Post, 'id' | 'createdAt' | 'updatedAt'>>): Post | null => {
-        const postIndex = posts.findIndex(post => post.id === id);
-        if (postIndex === -1) {
+    update: async (id: number, data: Partial<Omit<Post, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Post | null> => {
+        try {
+            const result = await prisma.post.update({
+                where: { id },
+                data: {
+                    ...data,
+                    updatedAt: new Date(),
+                },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        }
+                    }
+                }
+            });
+            return normalizePost(result);
+        } catch (error) {
             return null;
         }
-        const existingPost = posts[postIndex];
-        if(!existingPost) {
-            return null;
-        }   
-        const updatedPost = {
-            ...existingPost,
-            ...data,
-            updatedAt: new Date(),
-            id: existingPost.id,
-        };
-        posts[postIndex] = updatedPost;
-        return updatedPost;
     },
-    delete: (id: number): boolean => {
-        const initialLength = posts.length;
-        posts = posts.filter(post => post.id !== id);
-        return posts.length < initialLength;
+    delete: async (id: number): Promise<boolean> => {
+        try {
+            await prisma.post.delete({
+                where: { id }
+            });
+            return true;
+        } catch(error) {
+            return false;
+        }
     }
 };
