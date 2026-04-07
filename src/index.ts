@@ -2,9 +2,10 @@ import express ,  {  type Request, type Response, type NextFunction } from 'expr
 import postRoutes from './routes/post.routes.ts';
 import userRoutes from './routes/user.routes.ts';
 import morgan from 'morgan';
-import { int } from 'zod';
+import 'dotenv/config';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(morgan('dev'));
@@ -27,6 +28,6 @@ app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
     console.error("An error occurred:", err);
     res.status(err.status || 500).json({ success: false, message: err.message || "Internal Server Error" ,error: err});
 });
- app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+ app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

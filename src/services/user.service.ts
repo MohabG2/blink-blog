@@ -1,4 +1,3 @@
-import e from 'express';
 import {type User} from '../models/user.model.ts';
 import bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
@@ -8,15 +7,19 @@ import type { ca } from 'zod/locales';
 let users: User[] = [];
 let nextId = 1;
 export const UserService =  {
-        register: async(data: Prisma.UserCreateInput) => {
-            const hashedPassword = await bcrypt.hash(data.password, 10);
-            const user = await prisma.user.create({
-                data: {
-                    ...data,
-                    password: hashedPassword,
-                }
-            });
-            const {password, ...userWithoutPassword} = user;
+        register: (data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) => {
+            const existingUser = users.find(user => user.email === data.email);
+            if (existingUser) {
+                throw new Error("Email already exists");
+            }
+            const newUser: User = {
+                id: nextId++,
+                ...data,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            users.push(newUser);
+            const {password, ...userWithoutPassword} = newUser;
             return userWithoutPassword;
         },
         findByEmail: async (email: string)  => {
