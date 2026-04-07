@@ -1,5 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { UserService } from "../services/user.service.ts";
+// import bcrypt from 'bcrypt';
 
 export const UserController = {
     register: (req: Request, res: Response, next: NextFunction): void => {
