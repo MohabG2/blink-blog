@@ -8,12 +8,16 @@ Node.js for runtime
 Express.js
 Typescript
 Zod for validation
-Morgan for logging
-
+PostgreSQL for DB
+Prisma ORM
+Security: JWT, Bcrypt, Helmet, Express-rate-limit
 # Key Features: 
 * Modular Routing organization
 * Global error handling middleware
-* tsx execution (more modern)
+* Secure JWT Authentication
+* Strict Zod Validation
+* Database with PostgreSQL using Prisma ORM
+* Security measures like `Helmet` for secure HTTP headers, `Bcrypt` for password hashing, `Express-rate-limit` to prevent brute-force and DDOS attacks
 
 # Setup
 
@@ -26,7 +30,12 @@ cd blog-app
 \`\`\`bash
 npm install
 \`\`\`
-3. Run development server
+3. Create .env file like .env.example and set DB
+4. Run migrations
+\`\`\`bash
+npx prisma migrate dev
+\`\`\`
+5. Run development server
 \`\`\`bash
 npm run dev
 \`\`\`

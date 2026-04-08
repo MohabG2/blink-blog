@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import prisma from  '../prisma.ts'
+import { ConflictError } from '../utils/errors.ts';
 
 export const UserService =  {
         register: async (data: Prisma.UserCreateInput) => {
@@ -8,7 +9,7 @@ export const UserService =  {
                 where: { email: data.email }
             });
             if (existingUser) {
-                throw new Error("Email already exists");
+                throw new ConflictError("Email already exists");
             }
             const hashedPassword = await bcrypt.hash(data.password, 10);
             const userData = await prisma.user.create({

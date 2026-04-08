@@ -1,7 +1,8 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { UserService } from "../services/user.service.ts";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';     
+import jwt from 'jsonwebtoken'; 
+import { ConflictError } from "../utils/errors.ts";
 
 export const UserController = {
     register: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -9,8 +10,8 @@ export const UserController = {
             const user = await UserService.register(req.body);
             res.status(201).json({ success: true,message: "User registered successfully", user });
         } catch (error) {
-            if ((error as Error).message === "Email already exists") {
-                res.status(409).json({ success: false, message: (error as Error).message });
+            if (error instanceof ConflictError) {
+                res.status(409).json({ success: false, message: error.message });
             } else {
                 res.status(400).json({ success: false, message: (error as Error).message });
             }
