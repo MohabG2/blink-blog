@@ -1,4 +1,5 @@
 import express ,  {  type Request, type Response, type NextFunction } from 'express';
+import helmet from 'helmet';
 import postRoutes from './routes/post.routes.ts';
 import userRoutes from './routes/user.routes.ts';
 import morgan from 'morgan';
@@ -7,6 +8,7 @@ import 'dotenv/config';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -18,7 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(404).json({ success: false, message: "The route ${req.originalUrl} does not exist" });
+    res.status(404).json({ success: false, message: `The route ${req.originalUrl} does not exist` });
 });
 
 interface CustomError extends Error {

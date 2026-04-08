@@ -3,7 +3,8 @@ import {z} from "zod";
 export const registerSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters long"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters long")
+    password: z.string().min(8, "Password must be at least 8 characters long").regex(/[A-Z]/, "Password must contain at least one uppercase letter").regex(/[a-z]/, "Password must contain at least one lowercase letter").regex(/[0-9]/, "Password must contain at least one number").regex(/[/W_]/, "Password must contain at least one special character"),
+    age: z.number().int().positive("Age must be a positive integer").optional()
 });
 
 export const loginSchema = z.object({
@@ -14,5 +15,5 @@ export const loginSchema = z.object({
 export const updateUserSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters long").optional(),
     email: z.string().email("Invalid email address").optional(),
-    password: z.string().min(6, "Password must be at least 6 characters long").optional()
+    password: z.string().min(8, "Password must be at least 8 characters long").regex(/[A-Z]/, "Password must contain at least one uppercase letter").regex(/[a-z]/, "Password must contain at least one lowercase letter").regex(/[0-9]/, "Password must contain at least one number").regex(/[/W_]/, "Password must contain at least one special character").optional()
 });
